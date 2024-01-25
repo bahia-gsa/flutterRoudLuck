@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:draw/login.dart';
+import 'package:draw/forms/login_form.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 
 
 class NewUserRegisterForm extends StatefulWidget {
@@ -27,10 +28,10 @@ class _NewUserRegisterFormState extends State<NewUserRegisterForm> {
     );
 
     if (response.statusCode == 200) {
-      print('Registration successful! Response data: ${response.body}');
+      Logger().i("User Registered: ${response.body}");
       return jsonDecode(response.body);
     } else {
-      print('Registration failed. Response status code: ${response.statusCode}');
+      Logger().e("Registration failed. Response status code: ${response.statusCode}");
       return null;
     }
   }
@@ -58,6 +59,7 @@ class _NewUserRegisterFormState extends State<NewUserRegisterForm> {
                     TextFormField(
                       controller: nameController,
                       decoration: const InputDecoration(labelText: 'Name'),
+                      style: TextStyle(fontFamily: 'Unbounded'),
                       validator: (value) {
                         if (value == null || value.length < 2) {
                           return 'Name must be at least 2 characters';
@@ -69,6 +71,7 @@ class _NewUserRegisterFormState extends State<NewUserRegisterForm> {
                     TextFormField(
                       controller: emailController,
                       decoration: const InputDecoration(labelText: 'Email'),
+                      style: TextStyle(fontFamily: 'Unbounded'),
                       validator: (value) {
                         if (value == null || !value.contains('@')) {
                           return 'Please enter a valid email';
@@ -80,6 +83,7 @@ class _NewUserRegisterFormState extends State<NewUserRegisterForm> {
                     TextFormField(
                       controller: passwordController,
                       decoration: const InputDecoration(labelText: 'Password'),
+                      style: TextStyle(fontFamily: 'Unbounded'),
                       obscureText: true,
                       validator: (value) {
                         if (value == null || value.length < 8 || !value.contains(RegExp(r'\d')) || !value.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) {

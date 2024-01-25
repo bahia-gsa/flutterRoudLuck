@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:logger/logger.dart';
 
 class AddPlayerForm extends StatelessWidget {
   final TextEditingController nameController = TextEditingController();
@@ -25,11 +26,10 @@ Future<void> addNewPlayer(String playerName, String playerEmail, int gameId) asy
   );
 
   if (response.statusCode == 200) {
-    // If the server returns a 200 OK response, parse the JSON.
     addPlayer(jsonDecode(response.body));
-    print('Player added successfully ------------${response.body}');
+    Logger().i("Player added successfully ------------${response.body}");
   } else {
-    // If the server returns an unexpected response, throw an error.
+    Logger().e("Failed to add player. Response status code: ${response.statusCode}");
     throw Exception('Failed to add player');
   }
 }
@@ -38,35 +38,49 @@ Future<void> addNewPlayer(String playerName, String playerEmail, int gameId) asy
   Widget build(BuildContext context) {
     return Dialog(
       child: Container(
-        width: MediaQuery.of(context).size.width * 1, // 100% of screen width
-        height: MediaQuery.of(context).size.height * 0.45, // 45% of screen height
+        width: MediaQuery.of(context).size.width * 1,
+        height: MediaQuery.of(context).size.height * 0.60,
         child: AlertDialog(
-          title: Text('Add a new player'),
+          title: Center(child: Text('Add a player')),
           content: Form(
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             child: Column(
               children: <Widget>[
                 TextFormField(
                   controller: nameController,
-                  decoration: InputDecoration(labelText: 'Name'),
-                  // Add validation and save logic
+                  decoration: const InputDecoration(labelText: 'Name'),
+                  style: const TextStyle(fontFamily: 'Unbounded'),
+                  validator: (value) {
+                    if (value == null || value.length < 2) {
+                      return 'Name must be at least 2 characters';
+                    }
+                    return null;
+                  },
                 ),
+                const SizedBox(height: 15),
                 TextFormField(
                   controller: emailController,
-                  decoration: InputDecoration(labelText: 'Email'),
-                  // Add validation and save logic
+                  decoration: const InputDecoration(labelText: 'Email'),
+                  style: const TextStyle(fontFamily: 'Unbounded'),
+                  validator: (value) {
+                    if (value == null || !value.contains('@')) {
+                      return 'Please enter a valid email';
+                    }
+                    return null;
+                  },
                 ),
               ],
             ),
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text('Save'),
+              child: const Text('Save'),
               onPressed: () {
                 addNewPlayer(nameController.text, emailController.text, game['id']);
                 Navigator.of(context).pop();

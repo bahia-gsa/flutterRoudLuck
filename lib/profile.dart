@@ -1,6 +1,7 @@
 import 'package:draw/login.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:logger/logger.dart';
 
 class Profile extends StatefulWidget {
   
@@ -35,10 +36,10 @@ class _ProfileState extends State<Profile> {
       headers: headerOptions,
       );
     if (responseSpring.statusCode == 200) {
-      print('Profile deleted!');
+      Logger().i("Profile deleted successfully");
       return true;
     } else {
-      print('Failed to delete profile. Error: ${responseSpring.statusCode}');
+      Logger().e("Request for deleting Profile failed with status: ${responseSpring.statusCode}.");
       return false;
     }
   }
@@ -54,15 +55,13 @@ class _ProfileState extends State<Profile> {
       headers: headerOptions,
       );
     if (responseQuarkus.statusCode == 200) {
-      print('Profile in Quarkus deleted!');
+      Logger().i("Profile in Quarkus deleted!");
       return true;
     } else {
-      print('Failed to delete profile. Error: ${responseQuarkus.statusCode}');
+      Logger().e("Failed to delete profile in quarkus. Error: ${responseQuarkus.statusCode}");
       return false;
     }
   }
-
-
 
 
   @override

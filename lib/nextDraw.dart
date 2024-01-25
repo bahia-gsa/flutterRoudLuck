@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:logger/logger.dart';
+
 class NextDraw extends StatefulWidget {
 
     final Map<String, dynamic> game;
@@ -29,10 +31,10 @@ class _NextDrawState extends State<NextDraw> {
     );
 
     if (response.statusCode == 200) {
-      print('DRAW made successfully ------------${response.body}');
+      Logger().i("Draw made successfully ------------${response.body}");
       return jsonDecode(response.body);
     } else {
-      print('Request failed with status: ${response.statusCode}.');
+      Logger().e("Request for new Draw failed with status: ${response.statusCode}.");
       throw Exception('Failed to load data');
     }
   }
@@ -47,7 +49,7 @@ class _NextDrawState extends State<NextDraw> {
             'Next Round',
             style: TextStyle(fontSize: 28),
           ),
-           SizedBox(height: 20),
+           const SizedBox(height: 20),
           IconButton(
             icon: Icon(Icons.play_circle),
             iconSize: 100.0,
@@ -57,7 +59,7 @@ class _NextDrawState extends State<NextDraw> {
               });
             },
           ),
-          SizedBox(height: 60),
+          const SizedBox(height: 60),
           FutureBuilder<Map<String, dynamic>>(
             future: drawFuture,
             builder: (context, snapshot) {
@@ -69,11 +71,9 @@ class _NextDrawState extends State<NextDraw> {
                 return Container(
                   padding: EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    //color: Colors.blue[100],
                     borderRadius: BorderRadius.circular(10),
-                    boxShadow: [
+                    boxShadow: const [
                       BoxShadow(
-                        //color: Colors.blue.withOpacity(0.5),
                         spreadRadius: 5,
                         blurRadius: 7,
                         offset: Offset(0, 3),
@@ -86,7 +86,7 @@ class _NextDrawState extends State<NextDraw> {
                   ),
                 );
               } else {
-                return Text(
+                return const Text(
                   'No player drawn yet',
                   style: TextStyle(fontSize: 24),
                 );

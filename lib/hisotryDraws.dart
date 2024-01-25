@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:intl/intl.dart';
+import 'package:logger/logger.dart';
 
 
 class HistoryDraws extends StatefulWidget {
@@ -27,7 +28,6 @@ class _HistoryDrawsState extends State<HistoryDraws> {
     }
 
    Future<void> getDrawsByGame(String gameId) async {
-    // Replace with your API endpoint
     String jwt = widget.data['jwt'] ?? 'jwt not found';
     final headerOptions = {
       'Content-Type': 'application/json',
@@ -42,9 +42,9 @@ class _HistoryDrawsState extends State<HistoryDraws> {
       setState(() {
         DrawsByGame = List<Map<String, dynamic>>.from(jsonDecode(response.body));
       });
-      print('DrawsByGame: ${DrawsByGame}');
+      Logger().i("DrawsByGame: ${response.body}");
     } else {
-      print('Request failed with status: ${response.statusCode}.');
+      Logger().e("Request for Draws failed with status: ${response.statusCode}.");
       throw Exception('Failed to load data');
     }
   }
@@ -80,7 +80,7 @@ class _MyTableState extends State<DrawsTable> {
               ListTile(
                 title: Text(player['playerName']),
                 trailing: Text(DateFormat('dd/MM/yyyy HH:mm').format(DateTime.parse(player['createdAt'])),
-                  style: TextStyle(fontSize: 12, color: Colors.red)),
+                  style: TextStyle(fontSize: 12, color: Colors.pink)),
               ),
               Divider(height: 0),
             ],

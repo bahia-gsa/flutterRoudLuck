@@ -1,6 +1,7 @@
 import 'package:draw/forms/add_player_form.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:logger/logger.dart';
 
 class PlayersPage extends StatefulWidget {
   
@@ -57,7 +58,6 @@ class PlayersTable extends StatefulWidget {
 
 class _MyTableState extends State<PlayersTable> {
 
-
     Future<void> deletePlayer(Map<String, dynamic> player) async {
     String jwt = widget.data['jwt'] ?? 'jwt not found';
     final headerOptions = {
@@ -70,12 +70,12 @@ class _MyTableState extends State<PlayersTable> {
       );
 
     if (response.statusCode == 200) {
-        print('PLAYERS DELETED');
+        Logger().i("Player deleted successfully");
         setState(() {
           widget.playersByGame.remove(player);
       });
     } else {
-      print('Request failed with status: ${response.statusCode}.');
+      Logger().e("Request for delete Player failed with status: ${response.statusCode}.");
       throw Exception('Failed to load data');
     }
   
@@ -94,36 +94,36 @@ class _MyTableState extends State<PlayersTable> {
                 subtitle: Text(player['playerEmail'],
                 style: TextStyle(color: Colors.red),),
                 trailing: IconButton(
-  icon: Icon(Icons.delete_forever),
-  onPressed: () {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Confirm Delete'),
-          content: const Text('Are you sure you want to delete this player?'),
-          actions: <Widget>[
-            TextButton(
-              child: Text('Cancel'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: const Text('Delete'),
-              onPressed: () {
-                deletePlayer(player);
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  },
-),
+                  icon: Icon(Icons.delete_forever),
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('Confirm Delete'),
+                          content: const Text('Are you sure you want to delete this player?'),
+                          actions: <Widget>[
+                            TextButton(
+                              child: Text('Cancel'),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                            TextButton(
+                              child: const Text('Delete'),
+                              onPressed: () {
+                                deletePlayer(player);
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                ),
               ),
-              Divider(height: 0),
+              const Divider(height: 0),
             ],
           );
         }).toList(),

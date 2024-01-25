@@ -5,6 +5,7 @@ import 'package:draw/game.dart';
 import 'package:draw/profile.dart';
 import "package:flutter/material.dart";
 import 'package:http/http.dart' as http;
+import 'package:logger/logger.dart';
 
 class Home extends StatefulWidget {
 final Map<String, dynamic> data;
@@ -45,13 +46,13 @@ class _HomeState extends State<Home> {
       );
 
     if (response.statusCode == 200) {
-      print('GAMES---: ${response.body}');
+      Logger().i("GamesByUser: ${response.body}");
       setState(() {
         gamesByUser = List<Map<String, dynamic>>.from(jsonDecode(response.body));
 
       });
     } else {
-      print('Request failed with status: ${response.statusCode}.');
+      Logger().e("Request for Games failed with status: ${response.statusCode}.");
       throw Exception('Failed to load data');
     }
   }
@@ -68,9 +69,9 @@ class _HomeState extends State<Home> {
   );
 
   if (response.statusCode == 200) {
-    print('Game deleted successfully');
+    Logger().i("Game deleted successfully");
   } else {
-    print('Request failed with status: ${response.statusCode}.');
+    Logger().e("Request for delete Game failed with status: ${response.statusCode}.");
     throw Exception('Failed to delete game');
   }
 }

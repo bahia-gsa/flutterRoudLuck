@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'package:draw/hisotryDraws.dart';
-import 'package:draw/home.dart';
 import 'package:draw/nextDraw.dart';
 import 'package:draw/players_page.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 
 class Game extends StatefulWidget {
   final Map<String, dynamic> game;
@@ -43,21 +43,19 @@ class _GameState extends State<Game> {
       );
 
     if (response.statusCode == 200) {
-      print('PLAYERS---: ${response.body}');
+      Logger().i("PlayersByGame: ${response.body}");
       setState(() {
         playersByGame = List<Map<String, dynamic>>.from(jsonDecode(response.body));
 
       });
     } else {
-      print('Request failed with status: ${response.statusCode}.');
+      Logger().e("Request for Player failed with status: ${response.statusCode}.");
       throw Exception('Failed to load data');
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    print('Game: ${widget.game}');
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.black,

@@ -1,7 +1,7 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:logger/logger.dart';
 
 class NewGameForm extends StatelessWidget {
 
@@ -33,10 +33,10 @@ class NewGameForm extends StatelessWidget {
   );
 
   if (response.statusCode == 200) {
-    print('Game added successfully ------------${response.body}');
+    Logger().i("Game added successfully ------------${response.body}");
     return jsonDecode(response.body);
   } else {
-    print('Request failed with status: ${response.statusCode}.');
+    Logger().e("Failed to add game. Response status code: ${response.statusCode}");
     throw Exception('Failed to add game');
   }
 }
@@ -46,17 +46,24 @@ class NewGameForm extends StatelessWidget {
   Widget build(BuildContext context) {
     return Dialog(
       child: Container(
-        width: MediaQuery.of(context).size.width * 1, // 100% of screen width
-        height: MediaQuery.of(context).size.height * 0.45, // 45% of screen height
+        width: MediaQuery.of(context).size.width * 1, 
+        height: MediaQuery.of(context).size.height * 0.40,
         child: AlertDialog(
           title: Text('New Game'),
           content: Form(
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             child: Column(
               children: <Widget>[
                 TextFormField(
                   controller: nameController,
                   decoration: InputDecoration(labelText: 'Name'),
-                  // Add validation and save logic
+                  style: TextStyle(fontFamily: 'Unbounded'),
+                  validator: (value) {
+                    if (value == null || value.length < 2) {
+                      return 'Name must be at least 2 characters';
+                    }
+                    return null;
+                  },
                 ),
               ],
             ),
