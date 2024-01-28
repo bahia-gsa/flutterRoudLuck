@@ -1,9 +1,16 @@
 import 'dart:convert';
+import 'dart:math';
+import 'package:draw/forms/loging_with_google.dart';
+import 'package:draw/login.dart';
+import 'package:draw/pages/home_page.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:http/http.dart' as http;
 import 'package:draw/forms/new_user_register_form.dart';
 import 'package:draw/home.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+
 
 class LoginForm extends StatefulWidget  {
 
@@ -50,12 +57,12 @@ Future<bool> fetchData(BuildContext context, String email, String password) asyn
 
         jsonResponseSpring['jwt'] = jwt;
         Logger().i("jsonResponseSpring: $jsonResponseSpring");
-        Navigator.push(
+       /* Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => Home(data: jsonResponseSpring),
           ),
-        );
+        );*/
         return true;
       } else {
         Logger().e("Second request failed. Response status code: ${responseQuarkus.statusCode}");
@@ -83,11 +90,33 @@ class _LoginFormState extends State<LoginForm> {
   TextEditingController passwordController = TextEditingController();
   Future<bool>? loginFuture;
 
-  @override
-  void initState() {
-    super.initState();
-    emailController = TextEditingController(text: widget.initialEmail);
-  }
+@override
+void initState() {
+  super.initState();
+  emailController = TextEditingController(text: widget.initialEmail);
+  _loginWithGoogle();
+}
+
+void _loginWithGoogle() {
+  LoginWithGoogle.login().then((account) {
+    if (account != null) {
+      account.authentication.then((googleKey) {
+        Logger().i("User is already signed in: $account");
+        Logger().i("Google Key: ${googleKey.accessToken}");
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomePage(currentUser: account, accessToken: googleKey.accessToken),
+          ),
+        );
+      });
+    } else {
+      Logger().i("No user is currently signed in.");
+    }
+  }).catchError((error) {
+    Logger().e("Error signing in: $error");
+  });
+}
 
   @override
   Widget build(BuildContext context) {
@@ -134,15 +163,44 @@ class _LoginFormState extends State<LoginForm> {
                   const SizedBox(height: 20),
                   TextButton(
                     onPressed: () {
-                      Navigator.push(
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text('I am sorry!'),
+                              content: const Text('This feature is not implemented yet, please try connection with Google.',
+                                style: TextStyle(fontFamily: "Unbounded", fontSize: 13)
+                                ),
+                              actions: <Widget>[
+                                TextButton(
+                                  child: const Text('OK'),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                     /* Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => NewUserRegisterForm(),
                         ),
-                      );
+                      );*/
                     },
                     child: const Text('New User'),
                   ),
+                  const SizedBox(height: 20),
+                  IconButton(
+                    onPressed: () async {
+                      LoginWithGoogle.signIn().then((value) => _loginWithGoogle());
+                    },
+                    icon: SvgPicture.asset(
+                      'assets/icons/sign_in_google.svg',
+                      height: 50.0,
+                    ),
+                  )
                 ],
               );
             }

@@ -4,14 +4,16 @@ import 'package:draw/forms/new_game_from.dart';
 import 'package:draw/game.dart';
 import 'package:draw/profile.dart';
 import "package:flutter/material.dart";
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
 
 class Home extends StatefulWidget {
 final Map<String, dynamic> data;
+final GoogleSignInAccount currentUser;
 
   static const String routeName = "/home";
-  const Home({Key? key, required this.data}) : super(key: key);
+  const Home({Key? key, required this.data, required this.currentUser}) : super(key: key);
   
 
   @override
@@ -30,11 +32,9 @@ class _HomeState extends State<Home> {
   }
 
   Future<void> getGamesByUser(String userId) async {
-    // prevents unnecessary API calls 
     if(gamesByUser.isNotEmpty) {
       return;
     }
-    // Replace with your API endpoint
     String jwt = widget.data['jwt'] ?? 'jwt not found';
     final headerOptions = {
       'Content-Type': 'application/json',
@@ -78,17 +78,25 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    String name = widget.data['name'] ?? 'Welcome';
-    String jwt = widget.data['jwt'] ?? 'jwt not found';
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.black,
-        title: Text(name,
-        style: TextStyle(
-          color: Colors.white,
-        ),
-        ),
-        centerTitle: true,
+        title: Text(widget.currentUser.displayName ?? ''),
+        actions: <Widget>[
+          IconButton(
+            icon: GoogleUserCircleAvatar(
+              identity: widget.currentUser,
+            ),
+            onPressed: () {
+              print("object");
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => Profile(data: widget.data, currentUser: widget.currentUser),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: Center(
         child: ListView.builder(
@@ -155,18 +163,6 @@ class _HomeState extends State<Home> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            FloatingActionButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => Profile(data: widget.data),
-                  ),
-                );
-              },
-              child: Icon(Icons.person),
-              heroTag: 'ProfileButton',
-            ),
             const SizedBox(height: 30),
             FloatingActionButton.extended(
               onPressed: () {

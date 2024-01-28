@@ -1,14 +1,19 @@
+
+import 'package:draw/forms/loging_with_google.dart';
+import 'package:draw/home.dart';
 import 'package:draw/login.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
 
 class Profile extends StatefulWidget {
   
   final Map<String, dynamic> data;
+  final GoogleSignInAccount currentUser;
 
   static const String routeName = "/profile";
-  const Profile({Key? key, required this.data}) : super(key: key);
+  const Profile({Key? key, required this.data, required this.currentUser}) : super(key: key);
 
   @override
   State<Profile> createState() => _ProfileState();
@@ -79,8 +84,9 @@ class _ProfileState extends State<Profile> {
             children: [
               CircleAvatar(
                 radius: 50,
-                // Replace with your image
-                backgroundImage: NetworkImage('https://www.draw.schaedler-almeida.space/assets/uknownPicture.png'),
+                backgroundImage: NetworkImage(
+                  widget.currentUser.photoUrl ?? 'https://www.draw.schaedler-almeida.space/assets/uknownPicture.png'
+                ),
               ),
               SizedBox(height: 16),
               Text(
@@ -92,6 +98,18 @@ class _ProfileState extends State<Profile> {
                 widget.data['email'],
                 style: TextStyle(fontSize: 18),
               ),
+              SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () async {
+                  await LoginWithGoogle.disconnect();
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => Login()), // replace Login() with your first page widget
+                    (Route<dynamic> route) => false,
+                  );
+                },
+                child: Text("Logout")
+                ),
               SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () {
