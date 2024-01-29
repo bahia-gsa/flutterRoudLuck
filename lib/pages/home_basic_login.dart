@@ -8,19 +8,19 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
 
-class Home extends StatefulWidget {
+class HomeBasicLogin extends StatefulWidget {
 final Map<String, dynamic> data;
-final GoogleSignInAccount currentUser;
 
-  static const String routeName = "/home";
-  const Home({Key? key, required this.data, required this.currentUser}) : super(key: key);
+
+  static const String routeName = "/home-basic-login";
+  const HomeBasicLogin({Key? key, required this.data}) : super(key: key);
   
 
   @override
-  State<Home> createState() => _HomeState();
+  State<HomeBasicLogin> createState() => _HomeBasicLoginState();
 }
 
-class _HomeState extends State<Home> {
+class _HomeBasicLoginState extends State<HomeBasicLogin> {
     List<Map<String, dynamic>> gamesByUser = [];
 
   
@@ -80,21 +80,21 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.currentUser.displayName ?? ''),
+        title: Text(widget.data['name'] ?? ''),
         actions: <Widget>[
           IconButton(
-            icon: GoogleUserCircleAvatar(
-              identity: widget.currentUser,
+            icon: const CircleAvatar(
+              backgroundImage: NetworkImage('https://www.draw.schaedler-almeida.space/assets/uknownPicture.png'),
             ),
             onPressed: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => Profile(data: widget.data, currentUser: widget.currentUser),
+                  builder: (context) => Profile(data: widget.data),
                 ),
               );
             },
-          ),
+          )
         ],
       ),
       body: Center(

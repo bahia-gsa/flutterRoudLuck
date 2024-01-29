@@ -89,7 +89,6 @@ class _GameState extends State<Game> {
           ),
         ],
       ),
-      //body: currentPageIndex == 2 ? PlayersPage() : GameBody(game: widget.game, data: widget.data),
       body: currentPageIndex > 0 ? getBodyForIndex(currentPageIndex) : PlayersPage(playersByGame: playersByGame, data: widget.data, game: widget.game),
     );
   }

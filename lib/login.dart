@@ -1,6 +1,7 @@
 import 'package:draw/animation/subtitle_animation.dart';
 import 'package:draw/animation/title_animation.dart';
 import 'package:draw/forms/login_form.dart';
+import 'package:draw/pages/read_me.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/material.dart';
 
@@ -38,7 +39,6 @@ class _MyAppState extends State<Login> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => const LoginForm(),
-                          //builder: (context) => const SignInDemo(),
                         ),
                       );
                     },
@@ -60,6 +60,35 @@ class _MyAppState extends State<Login> {
                     ),
                   ),
                 ],
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ReadMe(),
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.black,
+                  onPrimary: Colors.white,
+                  elevation: 0.0,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SvgPicture.asset(
+                      'assets/icons/info.svg',
+                      height: 30,
+                      width: 30,
+                      color: Colors.pink,
+                    ),
+                    const SizedBox(width: 8),
+                    const Text('Read me'),
+                  ],
+                ),
               ),
               const Padding(
                 padding: EdgeInsets.all(1.0),

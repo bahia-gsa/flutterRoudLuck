@@ -1,6 +1,5 @@
 
 import 'package:draw/forms/loging_with_google.dart';
-import 'package:draw/home.dart';
 import 'package:draw/login.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -10,10 +9,10 @@ import 'package:logger/logger.dart';
 class Profile extends StatefulWidget {
   
   final Map<String, dynamic> data;
-  final GoogleSignInAccount currentUser;
+  final GoogleSignInAccount? currentUser;
 
   static const String routeName = "/profile";
-  const Profile({Key? key, required this.data, required this.currentUser}) : super(key: key);
+  const Profile({Key? key, required this.data, this.currentUser}) : super(key: key);
 
   @override
   State<Profile> createState() => _ProfileState();
@@ -80,54 +79,60 @@ class _ProfileState extends State<Profile> {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               CircleAvatar(
                 radius: 50,
                 backgroundImage: NetworkImage(
-                  widget.currentUser.photoUrl ?? 'https://www.draw.schaedler-almeida.space/assets/uknownPicture.png'
+                  widget.currentUser?.photoUrl ?? 'https://www.draw.schaedler-almeida.space/assets/uknownPicture.png'
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 50),
               Text(
                 widget.data['name'],
-                style: TextStyle(fontSize: 24),
+                style: const TextStyle(fontSize: 25),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Text(
                 widget.data['email'],
-                style: TextStyle(fontSize: 18),
+                style: const TextStyle(fontSize: 18, fontFamily: "Unbounded", color: Colors.white54),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 40),
               ElevatedButton(
                 onPressed: () async {
-                  await LoginWithGoogle.disconnect();
+                  if (widget.currentUser != null) {
+                    await LoginWithGoogle.disconnect();
+                  }
                   Navigator.pushAndRemoveUntil(
                     context,
-                    MaterialPageRoute(builder: (context) => Login()), // replace Login() with your first page widget
+                    MaterialPageRoute(builder: (context) => const Login()),
                     (Route<dynamic> route) => false,
                   );
                 },
-                child: Text("Logout")
-                ),
-              SizedBox(height: 16),
+                child: const Icon(
+                  Icons.power_settings_new,
+                  color: Colors.pink,
+                  size: 80,
+                  ),
+              ),
+              Expanded(child: Container()), // Add this line to fill the available space
               ElevatedButton(
                 onPressed: () {
                   showDialog(
                     context: context,
                     builder: (BuildContext context) {
                       return AlertDialog(
-                        title: Text('Confirm Delete'),
-                        content: Text('Are you sure you want to delete your profile?'),
+                        title: const Text('Confirm Delete'),
+                        content: const Text('Are you sure you want to delete your profile?'),
                         actions: [
                           TextButton(
-                            child: Text('Cancel'),
+                            child: const Text('Cancel'),
                             onPressed: () {
                               Navigator.of(context).pop();
                             },
                           ),
                           TextButton(
-                            child: Text('Delete'),
+                            child: const Text('Delete'),
                             onPressed: () {
                               deleteProfile();
                             },
@@ -137,12 +142,21 @@ class _ProfileState extends State<Profile> {
                     },
                   );
                 },
-                child: Text('Delete Profile'),
-                style: ElevatedButton.styleFrom(
-                  primary: Colors.red, // background
-                  onPrimary: Colors.white, // foreground
+                child: const Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Icon(
+                      Icons.person_off_outlined,
+                      color: Colors.red,
+                      size: 50.0,
+                    ),
+                    SizedBox(width: 10),
+                    Text('Delete Profile',
+                      style: TextStyle(fontFamily: "Unbounded", color: Colors.white),
+                    ), 
+                  ],
                 ),
-              ),
+              )
             ],
           ),
         ),

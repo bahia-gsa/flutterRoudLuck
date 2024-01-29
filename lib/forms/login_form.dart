@@ -1,15 +1,12 @@
 import 'dart:convert';
-import 'dart:math';
 import 'package:draw/forms/loging_with_google.dart';
-import 'package:draw/login.dart';
+import 'package:draw/pages/home_basic_login.dart';
 import 'package:draw/pages/home_page.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:http/http.dart' as http;
 import 'package:draw/forms/new_user_register_form.dart';
-import 'package:draw/home.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 
 
 class LoginForm extends StatefulWidget  {
@@ -57,12 +54,12 @@ Future<bool> fetchData(BuildContext context, String email, String password) asyn
 
         jsonResponseSpring['jwt'] = jwt;
         Logger().i("jsonResponseSpring: $jsonResponseSpring");
-       /* Navigator.push(
+       Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => Home(data: jsonResponseSpring),
+            builder: (context) => HomeBasicLogin(data: jsonResponseSpring),
           ),
-        );*/
+        );
         return true;
       } else {
         Logger().e("Second request failed. Response status code: ${responseQuarkus.statusCode}");
@@ -144,8 +141,8 @@ void _loginWithGoogle() {
                   const SizedBox(height: 16),
                   TextField(
                     controller: passwordController,
-                    decoration: InputDecoration(labelText: 'Password'),
-                    style: TextStyle(fontFamily: 'Unbounded'),
+                    decoration: const InputDecoration(labelText: 'Password'),
+                    style: const TextStyle(fontFamily: 'Unbounded'),
                     obscureText: true,
                   ),
                   const SizedBox(height: 16),
@@ -158,36 +155,17 @@ void _loginWithGoogle() {
                         loginFuture = fetchData(context, email, password) as Future<bool>?;
                       });
                     },
-                    child: Text('Login'),
+                    child: const Text('Login'),
                   ),
                   const SizedBox(height: 20),
                   TextButton(
                     onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: const Text('I am sorry!'),
-                              content: const Text('This feature is not implemented yet, please try connection with Google.',
-                                style: TextStyle(fontFamily: "Unbounded", fontSize: 13)
-                                ),
-                              actions: <Widget>[
-                                TextButton(
-                                  child: const Text('OK'),
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                     /* Navigator.push(
+                     Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => NewUserRegisterForm(),
                         ),
-                      );*/
+                      );
                     },
                     child: const Text('New User'),
                   ),
