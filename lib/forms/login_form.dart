@@ -12,7 +12,7 @@ import 'package:logger/logger.dart';
 class LoginForm extends StatefulWidget  {
 
   final String initialEmail;
-
+  
   const LoginForm({this.initialEmail = ''});
 
    @override
@@ -51,9 +51,10 @@ Future<bool> fetchData(BuildContext context, String email, String password) asyn
 
       if (responseQuarkus.statusCode == 200) {
         String jwt = responseQuarkus.body;
-
+        jsonResponseSpring['expiresIn'] = DateTime.now().add(const Duration(minutes: 1));
         jsonResponseSpring['jwt'] = jwt;
-        Logger().i("jsonResponseSpring: $jsonResponseSpring");
+        Logger().i("jsonResponseSpring: ${jsonResponseSpring}");
+
        Navigator.push(
           context,
           MaterialPageRoute(
@@ -135,8 +136,8 @@ void _loginWithGoogle() {
                 children: [
                   TextField(
                     controller: emailController,
-                    decoration: InputDecoration(labelText: 'Email'),
-                    style: TextStyle(fontFamily: 'Unbounded'),
+                    decoration: const InputDecoration(labelText: 'Email'),
+                    style: const TextStyle(fontFamily: 'Unbounded'),
                   ),
                   const SizedBox(height: 16),
                   TextField(

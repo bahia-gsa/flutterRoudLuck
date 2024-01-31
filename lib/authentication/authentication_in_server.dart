@@ -37,6 +37,7 @@ class AuthenticationInServer {
       if (responseQuarkus.statusCode == 200) {
         String jwt = responseQuarkus.body;
 
+        jsonResponseSpring['expiresIn'] = DateTime.now().add(const Duration(minutes: 1));
         jsonResponseSpring['jwt'] = jwt;
         Logger().i("jsonResponseSpring: $jsonResponseSpring");
         return jsonResponseSpring;

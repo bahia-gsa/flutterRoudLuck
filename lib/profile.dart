@@ -1,4 +1,5 @@
 
+import 'package:draw/authentication/token_service.dart';
 import 'package:draw/forms/loging_with_google.dart';
 import 'package:draw/login.dart';
 import 'package:flutter/material.dart';
@@ -134,6 +135,9 @@ class _ProfileState extends State<Profile> {
                           TextButton(
                             child: const Text('Delete'),
                             onPressed: () {
+                              if(!TokenService().isTokenValidity(widget.data['expiresIn'].toString())){
+                                TokenService().returnToInitialPage(context);
+                              }
                               deleteProfile();
                             },
                           ),

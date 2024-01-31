@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:draw/authentication/token_service.dart';
 import 'package:draw/hisotryDraws.dart';
 import 'package:draw/nextDraw.dart';
 import 'package:draw/players_page.dart';
@@ -72,7 +73,7 @@ class _GameState extends State<Game> {
             currentPageIndex = index;
           });
         },
-        indicatorColor: Colors.amber,
+        indicatorColor: Colors.pink,
         selectedIndex: currentPageIndex,
         destinations: const <Widget>[
           NavigationDestination(
@@ -93,6 +94,9 @@ class _GameState extends State<Game> {
     );
   }
    Widget getBodyForIndex(int index) {
+    if(!TokenService().isTokenValidity(widget.data['expiresIn'].toString())) {
+      TokenService().returnToInitialPage(context);
+    }
     switch (index) {
       case 0:
         return PlayersPage(playersByGame: playersByGame, data: widget.data, game: widget.game);

@@ -1,7 +1,9 @@
 import 'dart:convert';
 
+import 'package:draw/authentication/token_service.dart';
 import 'package:draw/forms/new_game_from.dart';
 import 'package:draw/game.dart';
+import 'package:draw/login.dart';
 import 'package:draw/profile.dart';
 import "package:flutter/material.dart";
 import 'package:google_sign_in/google_sign_in.dart';
@@ -24,12 +26,15 @@ class _HomeState extends State<Home> {
     List<Map<String, dynamic>> gamesByUser = [];
 
   
-  @override
-  void initState() {
-    super.initState();
-    String userId = widget.data['userId'].toString();
-    getGamesByUser(userId);
+@override
+void initState() {
+  super.initState();
+  if(TokenService().isTokenValidity(widget.data['expiresIn'].toString())){
+    getGamesByUser(widget.data['userId'].toString());
+  } else {
+    TokenService().returnToInitialPage(context);
   }
+}
 
   Future<void> getGamesByUser(String userId) async {
     if(gamesByUser.isNotEmpty) {
@@ -107,19 +112,23 @@ class _HomeState extends State<Home> {
                 title: ElevatedButton(
                   child: Text(gamesByUser[index]['gameName'], style: TextStyle(fontSize: 20)),
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => Game(
-                          game: gamesByUser[index],
-                          data: widget.data,
+                    if(TokenService().isTokenValidity(widget.data['expiresIn'].toString())){
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Game(
+                            game: gamesByUser[index],
+                            data: widget.data,
+                          ),
                         ),
-                      ),
-                    );
+                      );
+                    }else{
+                      TokenService().returnToInitialPage(context);
+                    }
                   },
                 ),
                 trailing: IconButton(
-                  icon: Icon(Icons.delete,
+                  icon: const Icon(Icons.delete,
                   color: Colors.red,
                   ),
                   onPressed: () {
@@ -127,11 +136,11 @@ class _HomeState extends State<Home> {
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
-                          title: Text('Delete Game'),
-                          content: Text('Are you sure you want to delete this game?'),
+                          title: const Text('Delete Game'),
+                          content: const Text('Are you sure you want to delete this game?'),
                           actions: <Widget>[
                             TextButton(
-                              child: Text('Cancel'),
+                              child: const Text('Cancel'),
                               onPressed: () {
                                 Navigator.of(context).pop();
                               },
@@ -139,11 +148,15 @@ class _HomeState extends State<Home> {
                             TextButton(
                               child: Text('OK'),
                               onPressed: () async {
-                                await deleteGame(gamesByUser[index]['id']);
-                                setState(() {
-                                  gamesByUser.removeAt(index);
-                                });
-                                Navigator.of(context).pop();
+                                if(TokenService().isTokenValidity(widget.data['expiresIn'].toString())){
+                                  await deleteGame(gamesByUser[index]['id']);
+                                  setState(() {
+                                    gamesByUser.removeAt(index);
+                                  });
+                                  Navigator.of(context).pop();
+                                }else{
+                                  TokenService().returnToInitialPage(context);
+                                }
                               },
                             ),
                           ],
@@ -165,19 +178,23 @@ class _HomeState extends State<Home> {
             const SizedBox(height: 30),
             FloatingActionButton.extended(
               onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return NewGameForm(
-                      data: widget.data,
-                      onNewGameAdded: (newGame) {
-                        setState(() {
-                          gamesByUser.add(newGame);
-                        });
-                      },
-                    );
-                  },
-                );
+                if(TokenService().isTokenValidity(widget.data['expiresIn'].toString())){
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return NewGameForm(
+                        data: widget.data,
+                        onNewGameAdded: (newGame) {
+                          setState(() {
+                            gamesByUser.add(newGame);
+                          });
+                        },
+                      );
+                    },
+                  );
+                }else{
+                  TokenService().returnToInitialPage(context);
+                }
               },
               icon: Icon(Icons.add),
               label: Text('Add Game'),
